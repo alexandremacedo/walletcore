@@ -1,0 +1,12 @@
+
+{
+    "Verify error": {
+        "prefix": "err!=nil",
+        "body": [
+          "if err != nil {",
+          "  return err",
+          "}"
+        ],
+        "description": ""
+      }
+}
