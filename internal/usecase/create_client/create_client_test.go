@@ -1,4 +1,4 @@
-package createClient
+package create_client
 
 import (
 	"testing"

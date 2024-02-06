@@ -1,4 +1,4 @@
-package createClient
+package create_account
 
 import (
 	"testing"
