@@ -7,13 +7,16 @@ import (
 
 	"github.com.br/alexandremacedo/walletcore/internal/database"
 	"github.com.br/alexandremacedo/walletcore/internal/event"
+	"github.com.br/alexandremacedo/walletcore/internal/event/handler"
 	"github.com.br/alexandremacedo/walletcore/internal/usecase/create_account"
 	"github.com.br/alexandremacedo/walletcore/internal/usecase/create_client"
 	"github.com.br/alexandremacedo/walletcore/internal/usecase/create_transaction"
 	"github.com.br/alexandremacedo/walletcore/internal/web"
 	webserver "github.com.br/alexandremacedo/walletcore/internal/web/webserver"
 	"github.com.br/alexandremacedo/walletcore/pkg/events"
+	"github.com.br/alexandremacedo/walletcore/pkg/kafka"
 	"github.com.br/alexandremacedo/walletcore/pkg/uow"
+	ckafka "github.com/confluentinc/confluent-kafka-go/kafka"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -24,9 +27,16 @@ func main() {
 	}
 	defer db.Close()
 
+	configMap := ckafka.ConfigMap{
+		"bootstrap.servers": "kafka:9094",
+		"group.id":          "wallet",
+	}
+
+	kafkaProducer := kafka.NewKafkaProducer(&configMap)
+
 	eventDispatcher := events.NewEventDispatcher()
+	eventDispatcher.Register("TransactionCreated", handler.NewTransactionCreatedKafkaHandler(kafkaProducer))
 	transactionCreatedEvent := event.NewTransactionCreated()
-	// eventDispatcher.Register("TransactionCreated", handler)
 
 	clientDb := database.NewClientDB(db)
 	accountDb := database.NewAccountDB(db)

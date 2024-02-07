@@ -24,7 +24,7 @@ func TestProducerPublish(t *testing.T) {
 		"test.mock.num.brokers": 3,
 	}
 
-	producer := NewProducer(&consfigMap)
+	producer := NewKafkaProducer(&consfigMap)
 	err := producer.Publish(expectedOutput, []byte("1"), "test")
 	assert.Nil(t, err)
 }
